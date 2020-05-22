@@ -1,3 +1,6 @@
 [submodule "Drivers/display_ILI-93xx_sm"]
 	path = Drivers/display_ILI-93xx_sm
 	url = https://github.com/bazhen-paseka/display_ILI-93xx_sm.git
+[submodule "Drivers/i2c_TechMaker_sm"]
+	path = Drivers/i2c_TechMaker_sm
+	url = https://github.com/bazhen-paseka/i2c_TechMaker_sm.git

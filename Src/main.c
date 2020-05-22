@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -29,6 +30,7 @@
 	#include <string.h>
 	#include "stdio.h"
 	#include "lcd.h"
+	#include "i2c_techmaker_sm.h"
 
 /* USER CODE END Includes */
 
@@ -92,6 +94,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_UART4_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   	  uint32_t	cnt_u32= 0 ;
@@ -121,6 +124,10 @@ int main(void)
 
 	LCD_Printf( "%s" , debugString ) ;
 	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+
+	I2Cdev_init(&hi2c1);
+	I2C_ScanBusFlow(&hi2c1, &huart4);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
