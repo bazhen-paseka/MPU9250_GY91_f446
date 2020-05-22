@@ -28,6 +28,7 @@
 
 	#include <string.h>
 	#include "stdio.h"
+	#include "lcd.h"
 
 /* USER CODE END Includes */
 
@@ -94,18 +95,42 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   	  uint32_t	cnt_u32= 0 ;
-	char		DataChar[50]	= {0};
-	sprintf(DataChar,"MPU-9250.\r\n");
-	HAL_UART_Transmit(&huart4, (uint8_t *)DataChar, strlen(DataChar), 100);
+	char		debugString[150]	= {0};
+	sprintf(debugString,"MPU-9250.\r\n");
+	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 
+
+	LCD_Init() ;
+	LCD_SetRotation( 1 ) ;
+	LCD_SetCursor( 0 , 0 ) ;
+	LCD_FillScreen( ILI92_BLACK ) ;
+	LCD_SetTextColor( ILI92_GREEN , ILI92_BLACK) ;
+	sprintf(debugString,">> LCD_Init - Ok\r\n" );HAL_UART_Transmit(&huart4,(uint8_t*)debugString,strlen(debugString),100) ;
+	LCD_Printf( "%s" , debugString ) ;
+
+	#define	SOFT_VERSION	123
+	int		soft_version_arr_int[3] = {0} ;
+	soft_version_arr_int[0] 	= ((SOFT_VERSION) / 100) %10 ;
+	soft_version_arr_int[1] 	= ((SOFT_VERSION) /  10) %10 ;
+	soft_version_arr_int[2] 	= ((SOFT_VERSION)      ) %10 ;
+	sprintf (	debugString																			,
+				"MPU-9250.\r\n2020-May-22 v%d.%d.%d \r\nfor_debug UART4 115200/8-N-1\r\n"	,
+				soft_version_arr_int[0]																,
+				soft_version_arr_int[1]																,
+				soft_version_arr_int[2]																) ;
+
+	LCD_Printf( "%s" , debugString ) ;
+	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		sprintf(DataChar,"cnt %d\r\n", (int)cnt_u32++);
-		HAL_UART_Transmit(&huart4, (uint8_t *)DataChar, strlen(DataChar), 100);
+		sprintf(debugString,"cnt %d\r\n", (int)cnt_u32++);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf( "%s" , debugString ) ;
+
 		HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
 		HAL_Delay(1000);
 
