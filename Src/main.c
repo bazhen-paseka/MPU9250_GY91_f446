@@ -33,6 +33,7 @@
 	#include "i2c_techmaker_sm.h"
 	#include "BMP280_sm.h"
 	#include "MPU9250_sm.h"
+	#include "MadgwickAHRS_sm.h"
 
 /* USER CODE END Includes */
 
@@ -99,7 +100,6 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  	  uint32_t	cnt_u32= 0 ;
 	char		debugString[150]	= {0};
 	sprintf(debugString,"MPU-9250.\r\n");
 	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
@@ -136,6 +136,7 @@ int main(void)
 	float gx, gy, gz;
 	float mx, my, mz;
 	float aX, aY, aZ;	// angle
+	uint32_t lastTime, currentTime, drawTime;
 
 	#define ANGLEBASE 20.0
 	#define PI180 0.017453292
@@ -178,6 +179,10 @@ int main(void)
 	sprintf(debugString," connection successful!\r\n");
 	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 	LCD_Printf("%s" , debugString);
+
+	Madgwick_init();
+	lastTime = drawTime = HAL_GetTick();
+
 	HAL_Delay(1000);
 	LCD_FillScreen(ILI92_BLACK);
 
@@ -200,7 +205,16 @@ int main(void)
 
 		MPU9250_getMotion9Real(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
 
-		//LCD_SetCursor(0, 0);
+		currentTime = HAL_GetTick();
+		Madgwick_update(gx, gy, gz, ax, ay, az, mx, my, mz, (currentTime - lastTime)/1000.0);
+		lastTime = currentTime;
+
+		aX = Madgwick_getPitch() ;
+		aY = Madgwick_getRoll()  ;
+		aZ = Madgwick_getYaw() - 180.0 ;
+
+		LCD_SetCursor(0, 0);
+		LCD_FillScreen(ILI92_BLACK);
 		//LCD_Printf("T: %6.2f C  P: %6.0f Pa  A: %3.0f m\n", temp, press, alt);
 		sprintf(debugString,"T: %6.2f C  P: %6.0f Pa  A: %3.0f m\r\n", temp, press, alt);
 		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
@@ -222,7 +236,10 @@ int main(void)
 		LCD_Printf("%s" , debugString);
 
 
-//		LCD_Printf("Madg: X: %5.1f Y: %5.1f Z: %5.1f\n", aX, aY, aZ);
+//	LCD_Printf("Madg: X: %5.1f Y: %5.1f Z: %5.1f\n", aX, aY, aZ);
+		sprintf(debugString,"Madg: X: %5.1f Y: %5.1f Z: %5.1f\r\n\r\n", aX, aY, aZ);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
 		//LCD_Printf("Max : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmax, aYmax, aZmax);
 		//LCD_Printf("Min : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmin, aYmin, aZmin);
 

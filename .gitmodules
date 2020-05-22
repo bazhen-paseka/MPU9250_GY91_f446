@@ -10,3 +10,6 @@
 [submodule "Drivers/MPU9250_TM2015_sm"]
 	path = Drivers/MPU9250_TM2015_sm
 	url = https://github.com/bazhen-paseka/MPU9250_TM2015_sm.git
+[submodule "Drivers/MadgwickAHRS_TM2015_sm"]
+	path = Drivers/MadgwickAHRS_TM2015_sm
+	url = https://github.com/bazhen-paseka/MadgwickAHRS_TM2015_sm.git
