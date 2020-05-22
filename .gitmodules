@@ -7,3 +7,6 @@
 [submodule "Drivers/bmp280_sm"]
 	path = Drivers/bmp280_sm
 	url = https://github.com/bazhen-paseka/bmp280_sm.git
+[submodule "Drivers/MPU9250_TM2015_sm"]
+	path = Drivers/MPU9250_TM2015_sm
+	url = https://github.com/bazhen-paseka/MPU9250_TM2015_sm.git

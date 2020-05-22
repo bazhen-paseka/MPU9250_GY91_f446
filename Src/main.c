@@ -32,6 +32,7 @@
 	#include "lcd.h"
 	#include "i2c_techmaker_sm.h"
 	#include "BMP280_sm.h"
+	#include "MPU9250_sm.h"
 
 /* USER CODE END Includes */
 
@@ -129,18 +130,103 @@ int main(void)
 	I2Cdev_init(&hi2c1);
 	I2C_ScanBusFlow(&hi2c1, &huart4);
 
+	double temp, press, alt;
+	int8_t com_rslt;
+	float ax, ay, az;
+	float gx, gy, gz;
+	float mx, my, mz;
+	float aX, aY, aZ;	// angle
+
+	#define ANGLEBASE 20.0
+	#define PI180 0.017453292
+	#define COS45 0.7071
+	#define R1 25
+	#define R2 50
+
+	//LCD_Printf("Connecting to BMP280...\n");
+	sprintf(debugString,"Connecting to BMP280... ");
+	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+	LCD_Printf("%s" , debugString);
+
+	bmp280_t bmp280;
+	com_rslt = BMP280_init(&bmp280);
+	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
+	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
+	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
+	if (com_rslt != SUCCESS) {
+		sprintf(debugString," Check BMP280 connection! \t Program terminated!!!<<<<\r\n");
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
+		//return 0;
+	} else {
+		//	LCD_Printf("Connection successful!\n");
+		sprintf(debugString,"Connection successful!\r\n");
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
+	}
+
+	//LCD_Printf("Connecting to MPU9250...\n");
+	sprintf(debugString,"Connecting to MPU9250...");
+	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+	LCD_Printf("%s" , debugString);
+
+	while(!MPU9250_testConnection());
+	MPU9250_initialize();
+	MPU9250_setFullScaleGyroRange(MPU9250_GYRO_FS_1000); // 1000 град/сек
+	MPU9250_setFullScaleAccelRange(MPU9250_ACCEL_FS_4); // 4g
+	//LCD_Printf("Connection successful!\n\n");
+	sprintf(debugString," connection successful!\r\n");
+	HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+	LCD_Printf("%s" , debugString);
+	HAL_Delay(1000);
+	LCD_FillScreen(ILI92_BLACK);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		sprintf(debugString,"cnt %d\r\n", (int)cnt_u32++);
-		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
-		LCD_Printf( "%s" , debugString ) ;
+//		sprintf(debugString,"cnt %d\r\n", (int)cnt_u32++);
+//		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+//		LCD_Printf( "%s" , debugString ) ;
 
 		HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
 		HAL_Delay(1000);
+
+		BMP280_read_temperature_double(&temp);
+		BMP280_read_pressure_double(&press);
+		alt = BMP280_calculate_altitude(102900); // insert actual data here
+
+		MPU9250_getMotion9Real(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
+
+		//LCD_SetCursor(0, 0);
+		//LCD_Printf("T: %6.2f C  P: %6.0f Pa  A: %3.0f m\n", temp, press, alt);
+		sprintf(debugString,"T: %6.2f C  P: %6.0f Pa  A: %3.0f m\r\n", temp, press, alt);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
+
+//	LCD_Printf("Accel:   %7.4f %7.4f %7.4f\n", ax, ay, az);
+		sprintf(debugString,"Accel:   %7.4f %7.4f %7.4f\r\n", ax, ay, az);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
+
+//	LCD_Printf("Gyro:    %7.4f %7.4f %7.4f\n", gx, gy, gz);
+		sprintf(debugString,"Gyro:    %7.4f %7.4f %7.4f\r\n", gx, gy, gz);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
+
+//	LCD_Printf("Compass: %7.1f %7.1f %7.1f\n\n", mx, my, mz);
+		sprintf(debugString,"Compass: %7.1f %7.1f %7.1f\r\n", mx, my, mz);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		LCD_Printf("%s" , debugString);
+
+
+//		LCD_Printf("Madg: X: %5.1f Y: %5.1f Z: %5.1f\n", aX, aY, aZ);
+		//LCD_Printf("Max : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmax, aYmax, aZmax);
+		//LCD_Printf("Min : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmin, aYmin, aZmin);
+
+		//LCD_Printf("Old_Madg: P: %5.1f R: %5.1f Y: %5.1f\n", Madgwick_getPitch(), Madgwick_getRoll(), Madgwick_getYaw() );
 
     /* USER CODE END WHILE */
 
