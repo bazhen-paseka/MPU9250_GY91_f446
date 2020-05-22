@@ -4,3 +4,6 @@
 [submodule "Drivers/i2c_TechMaker_sm"]
 	path = Drivers/i2c_TechMaker_sm
 	url = https://github.com/bazhen-paseka/i2c_TechMaker_sm.git
+[submodule "Drivers/bmp280_sm"]
+	path = Drivers/bmp280_sm
+	url = https://github.com/bazhen-paseka/bmp280_sm.git

@@ -31,6 +31,7 @@
 	#include "stdio.h"
 	#include "lcd.h"
 	#include "i2c_techmaker_sm.h"
+	#include "BMP280_sm.h"
 
 /* USER CODE END Includes */
 
