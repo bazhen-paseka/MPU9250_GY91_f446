@@ -131,7 +131,7 @@ int main(void)
 	I2C_ScanBusFlow(&hi2c1, &huart4);
 
 	double temp, press, alt;
-	int8_t com_rslt;
+	int8_t com_rslt = 13;
 	float ax, ay, az;
 	float gx, gy, gz;
 	float mx, my, mz;
@@ -143,6 +143,7 @@ int main(void)
 	#define COS45 0.7071
 	#define R1 25
 	#define R2 50
+	int cntr_int	= 0;
 
 	//LCD_Printf("Connecting to BMP280...\n");
 	sprintf(debugString,"Connecting to BMP280... ");
@@ -150,10 +151,10 @@ int main(void)
 	LCD_Printf("%s" , debugString);
 
 	bmp280_t bmp280;
-	com_rslt = BMP280_init(&bmp280);
-	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
-	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
-	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
+//	com_rslt = BMP280_init(&bmp280);
+//	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
+//	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
+//	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
 	if (com_rslt != SUCCESS) {
 		sprintf(debugString," Check BMP280 connection! \t Program terminated!!!<<<<\r\n");
 		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
@@ -199,9 +200,9 @@ int main(void)
 		HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
 		HAL_Delay(1000);
 
-		BMP280_read_temperature_double(&temp);
-		BMP280_read_pressure_double(&press);
-		alt = BMP280_calculate_altitude(102900); // insert actual data here
+		//BMP280_read_temperature_double(&temp);
+		//BMP280_read_pressure_double(&press);
+		//alt = BMP280_calculate_altitude(102900); // insert actual data here
 
 		MPU9250_getMotion9Real(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
 
@@ -217,29 +218,34 @@ int main(void)
 		LCD_FillScreen(ILI92_BLACK);
 		//LCD_Printf("T: %6.2f C  P: %6.0f Pa  A: %3.0f m\n", temp, press, alt);
 		sprintf(debugString,"T: %6.2f C  P: %6.0f Pa  A: %3.0f m\r\n", temp, press, alt);
-		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
 //	LCD_Printf("Accel:   %7.4f %7.4f %7.4f\n", ax, ay, az);
 		sprintf(debugString,"Accel:   %7.4f %7.4f %7.4f\r\n", ax, ay, az);
-		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
 //	LCD_Printf("Gyro:    %7.4f %7.4f %7.4f\n", gx, gy, gz);
 		sprintf(debugString,"Gyro:    %7.4f %7.4f %7.4f\r\n", gx, gy, gz);
-		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
 //	LCD_Printf("Compass: %7.1f %7.1f %7.1f\n\n", mx, my, mz);
 		sprintf(debugString,"Compass: %7.1f %7.1f %7.1f\r\n", mx, my, mz);
-		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
 
 //	LCD_Printf("Madg: X: %5.1f Y: %5.1f Z: %5.1f\n", aX, aY, aZ);
 		sprintf(debugString,"Madg: X: %5.1f Y: %5.1f Z: %5.1f\r\n\r\n", aX, aY, aZ);
-		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
+
+		//sprintf(debugString,"%04d\t%5.1f\t%5.1f\t%5.1f\r\n",cntr_int++, aX), aY, aZ);
+		sprintf(debugString,"%04d\t%5d\t%5d\t%5d\n",cntr_int++, (int)aX, (int)aY, (int)aZ ) ;
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+
 		//LCD_Printf("Max : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmax, aYmax, aZmax);
 		//LCD_Printf("Min : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmin, aYmin, aZmin);
 
