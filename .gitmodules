@@ -1,0 +1,15 @@
+[submodule "Drivers/display_ILI-93xx_sm"]
+	path = Drivers/display_ILI-93xx_sm
+	url = https://github.com/bazhen-paseka/display_ILI-93xx_sm.git
+[submodule "Drivers/i2c_TechMaker_sm"]
+	path = Drivers/i2c_TechMaker_sm
+	url = https://github.com/bazhen-paseka/i2c_TechMaker_sm.git
+[submodule "Drivers/bmp280_sm"]
+	path = Drivers/bmp280_sm
+	url = https://github.com/bazhen-paseka/bmp280_sm.git
+[submodule "Drivers/MPU9250_TM2015_sm"]
+	path = Drivers/MPU9250_TM2015_sm
+	url = https://github.com/bazhen-paseka/MPU9250_TM2015_sm.git
+[submodule "Drivers/MadgwickAHRS_TM2015_sm"]
+	path = Drivers/MadgwickAHRS_TM2015_sm
+	url = https://github.com/bazhen-paseka/MadgwickAHRS_TM2015_sm.git
