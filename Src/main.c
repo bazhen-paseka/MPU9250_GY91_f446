@@ -130,7 +130,8 @@ int main(void)
 	I2Cdev_init(&hi2c1);
 	I2C_ScanBusFlow(&hi2c1, &huart4);
 
-	double temp, press, alt;
+	double temp = 0, alt = 0;
+	double press = 0;
 	int8_t com_rslt = 13;
 	float ax, ay, az;
 	float gx, gy, gz;
@@ -151,10 +152,10 @@ int main(void)
 	LCD_Printf("%s" , debugString);
 
 	bmp280_t bmp280;
-//	com_rslt = BMP280_init(&bmp280);
-//	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
-//	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
-//	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
+	com_rslt = BMP280_init(&bmp280);
+	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
+	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
+	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
 	if (com_rslt != SUCCESS) {
 		sprintf(debugString," Check BMP280 connection! \t Program terminated!!!<<<<\r\n");
 		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
