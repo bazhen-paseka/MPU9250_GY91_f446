@@ -112,7 +112,7 @@ int main(void)
 	sprintf(debugString,">> LCD_Init - Ok\r\n" );HAL_UART_Transmit(&huart4,(uint8_t*)debugString,strlen(debugString),100) ;
 	LCD_Printf( "%s" , debugString ) ;
 
-	#define	SOFT_VERSION	123
+	#define	SOFT_VERSION	110
 	int		soft_version_arr_int[3] = {0} ;
 	soft_version_arr_int[0] 	= ((SOFT_VERSION) / 100) %10 ;
 	soft_version_arr_int[1] 	= ((SOFT_VERSION) /  10) %10 ;
