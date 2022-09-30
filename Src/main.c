@@ -17,7 +17,6 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
@@ -130,7 +129,8 @@ int main(void)
 	I2Cdev_init(&hi2c1);
 	I2C_ScanBusFlow(&hi2c1, &huart4);
 
-	double temp, press, alt;
+	double temp = 0, alt = 0;
+	double press = 0;
 	int8_t com_rslt = 13;
 	float ax, ay, az;
 	float gx, gy, gz;
@@ -151,10 +151,10 @@ int main(void)
 	LCD_Printf("%s" , debugString);
 
 	bmp280_t bmp280;
-//	com_rslt = BMP280_init(&bmp280);
-//	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
-//	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
-//	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
+	com_rslt = BMP280_init(&bmp280);
+	com_rslt += BMP280_set_power_mode(BMP280_NORMAL_MODE);
+	com_rslt += BMP280_set_work_mode(BMP280_STANDARD_RESOLUTION_MODE);
+	com_rslt += BMP280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
 	if (com_rslt != SUCCESS) {
 		sprintf(debugString," Check BMP280 connection! \t Program terminated!!!<<<<\r\n");
 		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
@@ -193,16 +193,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//		sprintf(debugString,"cnt %d\r\n", (int)cnt_u32++);
-//		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
-//		LCD_Printf( "%s" , debugString ) ;
-
 		HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
 		HAL_Delay(1000);
 
-		//BMP280_read_temperature_double(&temp);
-		//BMP280_read_pressure_double(&press);
-		//alt = BMP280_calculate_altitude(102900); // insert actual data here
+		BMP280_read_temperature_double(&temp);
+		BMP280_read_pressure_double(&press);
+		alt = BMP280_calculate_altitude(102900); // insert actual data here
 
 		MPU9250_getMotion9Real(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
 
@@ -216,34 +212,34 @@ int main(void)
 
 		LCD_SetCursor(0, 0);
 		LCD_FillScreen(ILI92_BLACK);
-		//LCD_Printf("T: %6.2f C  P: %6.0f Pa  A: %3.0f m\n", temp, press, alt);
+			//	LCD_Printf("T: %6.2f C  P: %6.0f Pa  A: %3.0f m\n", temp, press, alt);
 		sprintf(debugString,"T: %6.2f C  P: %6.0f Pa  A: %3.0f m\r\n", temp, press, alt);
-		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
-//	LCD_Printf("Accel:   %7.4f %7.4f %7.4f\n", ax, ay, az);
+			//	LCD_Printf("Accel:   %7.4f %7.4f %7.4f\n", ax, ay, az);
 		sprintf(debugString,"Accel:   %7.4f %7.4f %7.4f\r\n", ax, ay, az);
-		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
-//	LCD_Printf("Gyro:    %7.4f %7.4f %7.4f\n", gx, gy, gz);
+			//	LCD_Printf("Gyro:    %7.4f %7.4f %7.4f\n", gx, gy, gz);
 		sprintf(debugString,"Gyro:    %7.4f %7.4f %7.4f\r\n", gx, gy, gz);
-		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
-//	LCD_Printf("Compass: %7.1f %7.1f %7.1f\n\n", mx, my, mz);
+			//	LCD_Printf("Compass: %7.1f %7.1f %7.1f\n\n", mx, my, mz);
 		sprintf(debugString,"Compass: %7.1f %7.1f %7.1f\r\n", mx, my, mz);
-		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
 
-//	LCD_Printf("Madg: X: %5.1f Y: %5.1f Z: %5.1f\n", aX, aY, aZ);
+			//	LCD_Printf("Madg: X: %5.1f Y: %5.1f Z: %5.1f\n", aX, aY, aZ);
 		sprintf(debugString,"Madg: X: %5.1f Y: %5.1f Z: %5.1f\r\n\r\n", aX, aY, aZ);
-		//HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
+		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 		LCD_Printf("%s" , debugString);
 
 		//sprintf(debugString,"%04d\t%5.1f\t%5.1f\t%5.1f\r\n",cntr_int++, aX), aY, aZ);
-		sprintf(debugString,"%04d\t%5d\t%5d\t%5d\n",cntr_int++, (int)aX, (int)aY, (int)aZ ) ;
+		sprintf(debugString,"%04d\t%5d\t%5d\t%5d\r\n",cntr_int++, (int)aX, (int)aY, (int)aZ ) ;
 		HAL_UART_Transmit(&huart4, (uint8_t *)debugString, strlen(debugString), 100);
 
 		//LCD_Printf("Max : X: %5.1f Y: %5.1f Z: %5.1f\n", aXmax, aYmax, aZmax);
@@ -267,11 +263,13 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /** Configure the main internal regulator output voltage 
+  /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  /** Initializes the CPU, AHB and APB busses clocks 
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
@@ -286,13 +284,15 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Activate the Over-Drive mode 
+
+  /** Activate the Over-Drive mode
   */
   if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -332,12 +332,10 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
